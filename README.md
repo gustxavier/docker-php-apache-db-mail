@@ -1,4 +1,4 @@
-## DOCKER, PHP, APACHE, MARIADB, PHPMYADMIN, MAIL
+<h1 style="text-align: center;"> DOCKER, PHP, APACHE, MARIADB, PHPMYADMIN, MAIL</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/docker%20build-automated-blue"/>
