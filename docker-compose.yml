@@ -1,0 +1,61 @@
+version: '3.3'
+
+volumes:
+  db_var_lib_mysql: {}
+
+services:
+  mariadb:
+    container_name: ${APP_NAME}_mariadb # Works like and ID. IT has to be unique.
+    volumes:
+      - db_var_lib_mysql:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=$DB_NAME"
+      - "MYSQL_USER=$DB_USER"
+      - "MYSQL_PASSWORD=$DB_PASSWORD"
+    image: mariadb:${MARIADB_MAJOR:-10.4.5}
+    ports:
+      - 3306:3306
+  webserver:
+    image: gustasv00/php-apache-buster:8.1
+    container_name: ${APP_NAME}_php-apache
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - mariadb
+    volumes:
+      - ./:/var/www/html:rw
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/ssl:/etc/apache2/ssl/
+      - ./config/vhosts:/etc/apache2/sites-enabled
+      - ./logs/apache2:/var/log/apache2
+      - ./logs/xdebug:/var/log/xdebug
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      XDEBUG_CONFIG: client_host=host.docker.internal remote_port=${XDEBUG_PORT}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  phpmyadmin:
+    container_name: ${APP_NAME}_phpmyadmin # Works like and ID. IT has to be unique.
+    depends_on:
+      - mariadb
+    image: phpmyadmin/phpmyadmin:4.8.5
+    ports:
+      - 8080:80
+    environment:
+      - "PMA_ARBITRARY=1"
+      - "PMA_HOST=${DB_HOST}"
+      - "PMA_USER=${DB_USER}"
+      - "PMA_PASSWORD=${DB_PASSWORD}"
+  mailhog:
+    container_name: ${APP_NAME}_mailhog
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025

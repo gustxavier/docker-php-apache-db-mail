@@ -1,0 +1,13 @@
+{
+  "name": "docker-php-apache-db-mail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "start": "docker stop $(docker ps -q); docker-compose up --force-recreate"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}
